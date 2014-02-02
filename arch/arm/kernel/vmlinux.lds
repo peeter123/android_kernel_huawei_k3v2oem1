@@ -1,6 +1,6 @@
 /*
  * Automatically generated C config: don't edit
- * Linux/arm 3.0.8-00252-gf153003 Kernel Configuration
+ * Linux/arm 3.0.8 Kernel Configuration
  */
 /* ld script to make ARM Linux kernel
  * taken from the i386 version by Russell King
@@ -55,21 +55,11 @@
  * Examples are: [__initramfs_start, __initramfs_end] for initramfs and
  *               [__nosave_begin, __nosave_end] for the nosave data
  */
-
-
-
-
-
 /* Align . to a 8 byte boundary equals to maximum function alignment. */
-
-
 /*
  * Align to a 32 byte boundary equal to the
  * alignment gcc 4.5 uses for a struct
  */
-
-
-
 /* The actual configuration determine if the init/exit sections
  * are handled as text/data or they can be discarded (which
  * often happens at runtime)
@@ -193,13 +183,6 @@
  * Usage is:
  * 		int __deprecated foo(void)
  */
-
-
-
-
-
-
-
 /*
  * Allow us to avoid 'defined but not used' warnings on functions and data,
  * as well as force them to be emitted to the assembly file.

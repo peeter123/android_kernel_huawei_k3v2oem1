@@ -1,5 +1,5 @@
--include hwu9508_BoardConfig.mk
--include hwu9508_platform.mk
+-include U9508_BoardConfig.mk
+-include U9508_platform.mk
 VERSION = 3
 PATCHLEVEL = 0
 SUBLEVEL = 8
