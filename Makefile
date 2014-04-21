@@ -1,10 +1,10 @@
--include U9508_BoardConfig.mk
--include U9508_platform.mk
+-include UEDGE_BoardConfig.mk
+-include UEDGE_platform.mk
 VERSION = 3
 PATCHLEVEL = 0
-SUBLEVEL = 8
+SUBLEVEL = 101
 EXTRAVERSION =
-NAME = Sneaky Weasel
+NAME = Sodden Ben Lomond
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -372,12 +372,12 @@ KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
 		   -Wno-format-security \
 		   -fno-delete-null-pointer-checks
 
-ifeq ($(USE_LCD_CMI_OTM1280A),true)
-	KBUILD_CFLAGS += -DCONFIG_LCD_CMI_OTM1280A
+ifeq ($(USE_MATE_CAMERA_SETTINGS),true)
+      KBUILD_CFLAGS += -DUSE_MATE_CAMERA_SETTINGS
 endif
 
-ifeq ($(USE_LCD_TOSHIBA_MDW70),true)
-    KBUILD_CFLAGS += -DCONFIG_LCD_TOSHIBA_MDW70
+ifeq ($(USE_EDGE_CAMERA_SETTINGS),true)
+      KBUILD_CFLAGS += -DUSE_EDGE_CAMERA_SETTINGS
 endif
 
 KBUILD_AFLAGS_KERNEL :=
@@ -386,6 +386,10 @@ KBUILD_AFLAGS   := -D__ASSEMBLY__
 KBUILD_AFLAGS_MODULE  := -DMODULE
 KBUILD_CFLAGS_MODULE  := -DMODULE
 KBUILD_LDFLAGS_MODULE := -T $(srctree)/scripts/module-common.lds
+
+ifeq ($(USE_NFC_DEVICE_U9900),true)
+      KBUILD_CFLAGS += -DCONFIG_MATE_NFC_GPIO
+endif
 
 # Read KERNELRELEASE from include/config/kernel.release (if it exists)
 KERNELRELEASE = $(shell cat include/config/kernel.release 2> /dev/null)

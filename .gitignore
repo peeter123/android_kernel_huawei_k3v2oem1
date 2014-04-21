@@ -23,13 +23,12 @@
 *.symtypes
 *.order
 modules.builtin
-!drivers/mfd/cg2900/modules.order
 *.elf
 *.bin
 *.gz
 *.bz2
 *.lzma
-#*.xz
+*.xz
 *.lzo
 *.patch
 *.gcno
@@ -45,7 +44,6 @@ modules.builtin
 /System.map
 /Module.markers
 /Module.symvers
-/zImage
 
 #
 # Debian directory (make deb-pkg)
@@ -65,29 +63,6 @@ include/config
 include/linux/version.h
 include/generated
 arch/*/include/generated
-zImage
-include/asm
-include/asm-arm
-include/config
-include/linux/autoconf.h
-include/linux/compile.h
-include/linux/version.h
-include/linux/utsrelease.h
-include/linux/bounds.h
-include/generated
-
-#
-# Generated build output
-#
-arch/arm/boot/compressed/piggy.xzkern.S
-arch/arm/boot/compressed/lib1funcs.S
-arch/arm/boot/compressed/ashldi3.S
-arch/arm/boot/compressed/piggy.gzip
-arch/arm/boot/compressed/piggy.xzkern
-arch/arm/boot/compressed/vmlinux
-
-# CCACHE
-
 
 # stgit generated dirs
 patches-*
@@ -107,9 +82,20 @@ GSYMS
 GTAGS
 
 *.orig
+*.rej
 *~
-\#*#
-_t32
-_tool
 
-Module.symvers
+# lowjoel's stuff
+Build.sh
+
+# EternityProject patch files
+patch1
+patch2
+patch3
+*.diff
+patch-3.*
+
+# EternityProject: wl12xx
+/drivers/net/wireless/wl12xx/version.h
+
+\#*#
