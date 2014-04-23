@@ -32,14 +32,14 @@ else
 fi;
 
 export PARENT_DIR=`readlink -f ${KERNELDIR}/../..`;
-export INITRAMFS_SOURCE=`readlink -f ${KERNELDIR}/../initramfs`;
+export INITRAMFS_SOURCE=`readlink -f ${KERNELDIR}/../../cm-10.1/out/target/product/hwu9508/root`;
 export INITRAMFS_TMP=/tmp/initramfs_source;
 export CMDLINE='console=ttyS0 vmalloc=384M k3v2_pmem=1 mmcparts=mmcblk0:p1(xloader),p3(nvme),p4(misc),p5(splash),p6(oeminfo),p7(reserved1),p8(reserved2),p9(recovery2),p10(recovery),p11(boot),p12(modemimage),p13(modemnvm1),p14(modemnvm2),p15(system),p16(cache),p17(cust),p18(userdata);mmcblk1:p1(ext_sdcard)';
 
 
 # kernel
 export ARCH=arm;
-export USE_SEC_FIPS_MODE=true;
+#export USE_SEC_FIPS_MODE=true;
 
 # build script
 export USER=`whoami`;
@@ -55,11 +55,14 @@ chmod -R 777 /tmp;
 # gcc 4.4.3 (CM9)
 # export CROSS_COMPILE=/media/Source-Code/android/system/prebuilt/linux-x86/toolchain/arm-eabi-4.4.3/bin/arm-eabi-;
 
+# gcc 4.6 (HERE)
+export CROSS_COMPILE=arm-linux-androideabi-4.6/bin/arm-linux-androideabi-;
+
 # gcc 4.6 (CM10)
 #export CROSS_COMPILE=$PARENT_DIR/cm-11/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.6/bin/arm-linux-androideabi-;
 
 # gcc 4.7 (CM11)
-export CROSS_COMPILE=$PARENT_DIR/cm-11/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.7/bin/arm-linux-androideabi-;
+#export CROSS_COMPILE=$PARENT_DIR/cm-11/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.7/bin/arm-linux-androideabi-;
 
 # gcc 4.7 (Linaro 12.04)
 # export CROSS_COMPILE=$PARENT_DIR/linaro/bin/arm-eabi-;
@@ -77,38 +80,6 @@ export CROSS_COMPILE=$PARENT_DIR/cm-11/prebuilts/gcc/linux-x86/arm/arm-linux-and
 #
 ##################################################################
 
-
-# check xml-config for "STweaks"-app
-#XML2CHECK="${INITRAMFS_SOURCE}/res/customconfig/customconfig.xml";
-#xmllint --noout $XML2CHECK;
-#if [ $? == 1 ]; then
-#	echo "xml-Error: $XML2CHECK";
-#	exit 1;
-#fi;
-
-## compiler detection
-#if [ "a$GCCVERSION" == "a0404" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_old_gcc $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.3.X Compiler Detected, building";
-#elif [ "a$GCCVERSION" == "a0404" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_old_gcc $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.4.X Compiler Detected, building";
-#elif [ "a$GCCVERSION" == "a0405" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_old_gcc $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.5.X Compiler Detected, building";
-#elif [ "a$GCCVERSION" == "a0406" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_linaro $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.6.X Compiler Detected, building";
-#elif [ "a$GCCVERSION" == "a0407" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_linaro $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.7.X Compiler Detected, building";
-#elif [ "a$GCCVERSION" == "a0408" ]; then
-#	cp $KERNELDIR/arch/arm/boot/compressed/Makefile_linaro $KERNELDIR/arch/arm/boot/compressed/Makefile;
-#	echo "GCC 4.8.X Compiler Detected, building";
-#else
-#	echo "Compiler not recognized! please fix the 'build_kernel.sh'-script to match your compiler.";
-#	exit 0;
-#fi;
 
 
 NUMBEROFCPUS=$(expr `grep processor /proc/cpuinfo | wc -l` + 1);
@@ -161,22 +132,6 @@ make modules || exit 1;
 # copy initramfs files to tmp directory
 cp -ax $INITRAMFS_SOURCE $INITRAMFS_TMP;
 
-# create new image with version & date
-#read -t 3 -p "create new kernel Image LOGO with version & date, 3sec timeout (y/n)?";
-#echo "0" > $TMPFILE;
-#if [ "$REPLY" == "y" ]; then
-#	(
-#		boot_image=$INITRAMFS_TMP/res/images/icon_clockwork.png;
-#
-#		convert -ordered-dither threshold,32,64,32 -pointsize 17 -fill white -draw "text 70,770 \"$GETVER [`date "+%H:%M | %d.%m.%Y"| sed -e ' s/\"/\\\"/g' `]\"" $boot_image $boot_image;
-#
-#		optipng -o7 -quiet $boot_image;
-#
-#		echo "1" > $TMPFILE;	
-#	)&
-#else
-#	echo "1" > $TMPFILE;
-#fi;    
 
 # clear git repository from tmp-initramfs
 if [ -d $INITRAMFS_TMP/.git ]; then
@@ -203,12 +158,6 @@ for i in `find $KERNELDIR -name '*.ko'`; do
 	cp -av $i $INITRAMFS_TMP/system/lib/modules/;
 done;
 
-## do not --strip-debug from wifi module
-#mv $INITRAMFS_TMP/lib/modules/dhd.ko $INITRAMFS_TMP/lib/modules/dhd.tmp;
-#for i in `find $INITRAMFS_TMP/lib/modules/ -name '*.ko'`; do
-#	${CROSS_COMPILE}strip --strip-debug $i;
-#done;
-#mv $INITRAMFS_TMP/lib/modules/dhd.tmp $INITRAMFS_TMP/lib/modules/dhd.ko;
 
 chmod 755 $INITRAMFS_TMP/system/lib/modules/*;
 
@@ -217,9 +166,6 @@ while [ $(cat ${TMPFILE}) == 0 ]; do
 	sleep 2;
 	echo "wait for image ...";
 done;
-
-#md5sum PAYLOAD/res/misc/payload/STweaks.apk | awk '{print $1}' > $INITRAMFS_TMP/res/stweaks_md5;
-#chmod 644 $INITRAMFS_TMP/res/stweaks_md5;
 
 
 ##################################################################
@@ -234,6 +180,7 @@ done;
 #else
 #	time nice -n -15 make -j $NUMBEROFCPUS zImage CONFIG_INITRAMFS_SOURCE="$INITRAMFS_TMP";
 #fi;
+
 make zImage ;
 
 
@@ -262,11 +209,11 @@ if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	cd $KERNELDIR;	
 
 	# make boot image
-        ./mkbootimg --cmdline '$CMDLINE' --kernel $KERNELDIR/arch/arm/boot/zImage --ramdisk $KERNELDIR/ramdisk.cpio.gz --base 0x00000000 --ramdiskaddr 0x01000000 --pagesize 2048 -o $KERNELDIR/OUTPUT/boot.img
+        ./mkbootimg --cmdline "console=ttyS0 vmalloc=384M k3v2_pmem=1 mmcparts=mmcblk0:p1(xloader),p3(nvme),p4(misc),p5(splash),p6(oeminfo),p7(reserved1),p8(reserved2),p9(recovery2),p10(recovery),p11(boot),p12(modemimage),p13(modemnvm1),p14(modemnvm2),p15(system),p16(cache),p17(cust),p18(userdata);mmcblk1:p1(ext_sdcard)" --kernel $KERNELDIR/arch/arm/boot/zImage --ramdisk $KERNELDIR/ramdisk.cpio.gz --base 0x00000000 --ramdiskaddr 0x01000000 --pagesize 2048 -o $KERNELDIR/OUTPUT/boot.img
 
 
 	# create zip-file
-	cd $KERNELDIR/OUTPUT/ && zip -r Kernel_${GETVER}-`date +"[%H-%M]-[%d-%m]-U9508-PWR-CORE"`.zip .;
+	cd $KERNELDIR/OUTPUT/ && zip -r Kernel_${GETVER}-`date +"[%H-%M]-[%d-%m]-HWU9508-PWR-CORE"`.zip .;
 
 	# push to android
 	ADB_STATUS=`adb get-state`;

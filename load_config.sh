@@ -1,5 +1,5 @@
 #!/bin/bash
-
-cp arch/arm/configs/hisi_k3v2oem1_defconfig .config;
+make k3v2selinux_defconfig ARCH=arm
+#make eternityprj_u9508_defconfig ARCH=arm
 echo "done ...";
 
