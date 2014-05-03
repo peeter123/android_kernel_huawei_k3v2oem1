@@ -33,7 +33,7 @@ fi;
 
 export PARENT_DIR=`readlink -f ${KERNELDIR}/../..`;
 export INITRAMFS_SOURCE=`readlink -f ${KERNELDIR}/../../cm-10.1/out/target/product/hwu9508/root`;
-export INITRAMFS_TMP=/tmp/initramfs_source;
+export INITRAMFS_TMP=tmp/initramfs_source;
 export CMDLINE='console=ttyS0 vmalloc=384M k3v2_pmem=1 mmcparts=mmcblk0:p1(xloader),p3(nvme),p4(misc),p5(splash),p6(oeminfo),p7(reserved1),p8(reserved2),p9(recovery2),p10(recovery),p11(boot),p12(modemimage),p13(modemnvm1),p14(modemnvm2),p15(system),p16(cache),p17(cust),p18(userdata);mmcblk1:p1(ext_sdcard)';
 
 
@@ -46,7 +46,7 @@ export USER=`whoami`;
 export HOST=`uname -n`;
 export TMPFILE=`mktemp -t`;
 
-chmod -R 777 /tmp;
+chmod -R 777 tmp;
 
 # system compiler
 # gcc x.x.x
@@ -204,9 +204,11 @@ if [ -e $KERNELDIR/arch/arm/boot/zImage ]; then
 	cp $KERNELDIR/.config $KERNELDIR/OUTPUT/;
 
 	# compress ramdisk
-    	cd $INITRAMFS_TMP;
- 	find . | cpio -o -H newc | gzip > $KERNELDIR/ramdisk.cpio.gz
-	cd $KERNELDIR;	
+    	./mkbootfs $INITRAMFS_TMP | ./minigzip $KERNELDIR/ramdisk.cpio.gz
+ 	
+	#cd $INITRAMFS_TMP
+	#find . | cpio -o -H newc | gzip > $KERNELDIR/ramdisk.cpio.gz
+	#cd $KERNELDIR;	
 
 	# make boot image
         ./mkbootimg --cmdline "console=ttyS0 vmalloc=384M k3v2_pmem=1 mmcparts=mmcblk0:p1(xloader),p3(nvme),p4(misc),p5(splash),p6(oeminfo),p7(reserved1),p8(reserved2),p9(recovery2),p10(recovery),p11(boot),p12(modemimage),p13(modemnvm1),p14(modemnvm2),p15(system),p16(cache),p17(cust),p18(userdata);mmcblk1:p1(ext_sdcard)" --kernel $KERNELDIR/arch/arm/boot/zImage --ramdisk $KERNELDIR/ramdisk.cpio.gz --base 0x00000000 --ramdiskaddr 0x01000000 --pagesize 2048 -o $KERNELDIR/OUTPUT/boot.img
